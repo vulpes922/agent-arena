@@ -1,6 +1,6 @@
 # Agent Arena · local edition
 
-A minimal conversation between two AI agents. Describe something you want to make, watch Spark and Anchor respond to each other, and jump in with your own direction.
+A minimal conversation between two AI agents. Describe something you want to make, watch Defender and Challenger respond to each other, and jump in with your own direction.
 
 ![Two-sided debate with a moderator, showing the authored sample](docs/arena-debate.png)
 
@@ -19,13 +19,13 @@ The launcher uses the project's official Codex CLI and opens sign-in if needed. 
 
 ## Use it
 
-- Type your idea and start. Spark and Anchor take turns; each sees the preceding reply.
+- Type your idea and start. Defender and Challenger take turns; each sees the preceding reply.
 - Replies appear when each model call finishes. This is live inference, not token-by-token streaming.
 - **Pause** cancels the in-progress reply. **Continue** resumes with the next agent, keeping all completed messages.
 - Sending your own direction pauses the debate and adds it to the transcript. Continue when ready; the next agent receives that direction.
 - Each run allows up to six replies, then pauses. Continue for another six. Each reply uses one Codex request and consumes your own account's allowance.
-- Open **Agent settings** to choose a separate model for Spark and Anchor. Model suggestions come from the local Codex cache; you can also enter an exact model ID. Account availability is checked by Codex when you run a turn. Pause before changing models. Earlier messages keep their original model labels.
-- **Ask Orbit** asks the moderator to summarize both sides and adds a checkpoint without ending the conversation. Its model is independently selectable in settings, and it uses one request.
+- Open **Agent settings** to choose a separate model for Defender and Challenger. Model suggestions come from the local Codex cache; you can also enter an exact model ID. Account availability is checked by Codex when you run a turn. Pause before changing models. Earlier messages keep their original model labels.
+- **Ask moderator** summarizes both sides and adds a checkpoint without ending the conversation. Its model is independently selectable in settings, and it uses one request.
 - Export the complete transcript as Markdown. The last 12 conversations are saved in this browser; open Recent conversations on the home screen to resume one.
 
 The authored sample makes no model calls. Its replies are fixed and do not adapt to your notes. The original staged prototype and its existing saved arenas remain at `/classic` (linked from settings).
@@ -42,7 +42,7 @@ Local credentials stay with Codex. Agent subprocesses use ephemeral sessions, is
 - [online](https://github.com/vulpes922/agent-arena/tree/online): separately maintained hosted sample; visitor ChatGPT plan access has been requested and remains pending.
 - `main`: original prototype baseline.
 
-The hosted preview has not been replaced by this local edition.
+The hosted preview shares this interface, while live hosted inference remains approval-gated.
 
 ## Development
 

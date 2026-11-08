@@ -19,6 +19,7 @@ import {
   rolesForConversation,
 } from "@/lib/conversation.mjs";
 import { sampleMission, sampleReplies } from "@/lib/conversation-sample";
+import { edition } from "@/lib/edition";
 import "./conversation.css";
 
 type Speaker = "spark" | "anchor" | "user" | "moderator";
@@ -46,10 +47,10 @@ type Status = {
 };
 const KEY = "agent-arena.conversations.v1";
 const names = {
-  spark: "Spark",
-  anchor: "Anchor",
+  spark: "Defender",
+  anchor: "Challenger",
   user: "You",
-  moderator: "Orbit",
+  moderator: "Moderator",
 };
 const defaults = { spark: "", anchor: "", moderator: "" };
 
@@ -82,8 +83,9 @@ export default function Conversation() {
     } catch {
       setStatus({
         available: false,
-        reason:
-          "Local server unavailable. Start npm run local in your terminal.",
+        reason: edition.online
+          ? "The online preview is unavailable. Please refresh."
+          : "Local server unavailable. Start npm run local in your terminal.",
       });
     }
   }
@@ -248,7 +250,7 @@ export default function Conversation() {
   }
   async function continueChat(s = current.current) {
     if (!s || running.current) return;
-    if (s.mode === "live" && !status?.available) {
+    if (s.mode === "live" && (edition.online || !status?.available)) {
       setError(status?.reason || "Check your local connection.");
       setSettings(true);
       return;
@@ -411,12 +413,12 @@ export default function Conversation() {
       <button
         className={`participant spark ${busy === "spark" ? "speaking" : ""}`}
         onClick={() => setSettings(true)}
-        aria-label="Spark, side A. Open agent settings"
+        aria-label="Defender, side A. Open agent settings"
       >
         <span className="participant-symbol" aria-hidden="true">
           ✳
         </span>
-        <strong>Spark</strong>
+        <strong>Defender</strong>
         <span className="participant-role">Side A · {activeRoles.spark}</span>
       </button>
       <div className="debate-middle">
@@ -426,23 +428,23 @@ export default function Conversation() {
         <button
           className={`participant orbit ${busy === "moderator" ? "speaking" : ""}`}
           onClick={() => setSettings(true)}
-          aria-label="Orbit, moderator. Open agent settings"
+          aria-label="Moderator. Open agent settings"
         >
           <span className="orbit-name">
-            <span aria-hidden="true">○</span> Orbit
+            <span aria-hidden="true">○</span> Moderator
           </span>
-          <span className="participant-role">Moderator</span>
+          <span className="participant-role">Neutral</span>
         </button>
       </div>
       <button
         className={`participant anchor ${busy === "anchor" ? "speaking" : ""}`}
         onClick={() => setSettings(true)}
-        aria-label="Anchor, side B. Open agent settings"
+        aria-label="Challenger, side B. Open agent settings"
       >
         <span className="participant-symbol" aria-hidden="true">
           ✦
         </span>
-        <strong>Anchor</strong>
+        <strong>Challenger</strong>
         <span className="participant-role">Side B · {activeRoles.anchor}</span>
       </button>
     </nav>
@@ -456,11 +458,13 @@ export default function Conversation() {
         <div className="header-actions">
           <span className="connection-label">
             <i className={status?.available ? "online" : ""} />
-            {chat?.mode === "sample"
-              ? "Sample"
-              : status?.available
-                ? "Local · connected"
-                : "Local · offline"}
+            {edition.online
+              ? "Online · sample preview"
+              : chat?.mode === "sample"
+                ? "Sample"
+                : status?.available
+                  ? "Local · connected"
+                  : "Local · offline"}
           </span>
           <button
             aria-label="Agent settings"
@@ -487,6 +491,18 @@ export default function Conversation() {
       </header>
       {chat && <div className="debate-roster">{participants}</div>}
       <main className="chat-main">
+        {edition.online && (
+          <p className="online-access-note">
+            Live ChatGPT plan access is awaiting approval.{" "}
+            <a
+              href="https://github.com/vulpes922/agent-arena/tree/local"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Try live locally ↗
+            </a>
+          </p>
+        )}
         {!chat ? (
           <section className="empty-chat">
             {participants}
@@ -497,9 +513,9 @@ export default function Conversation() {
               talk it out.
             </h1>
             <p>
-              Spark and Anchor debate your idea.
+              Defender and Challenger debate your idea.
               <br />
-              Ask Orbit to bring the strongest points together.
+              Ask the moderator to bring the strongest points together.
             </p>
           </section>
         ) : (
@@ -534,7 +550,7 @@ export default function Conversation() {
                       {m.speaker === "spark" || m.speaker === "anchor"
                         ? `${m.speaker === "spark" ? "Side A" : "Side B"} · ${activeRoles[m.speaker]}`
                         : m.speaker === "moderator"
-                          ? "Moderator · recap"
+                          ? "Neutral · recap"
                           : "Direction"}
                     </span>
                     {m.model && (
@@ -559,7 +575,7 @@ export default function Conversation() {
                     <strong>{names[busy]}</strong>
                     <span>
                       {busy === "moderator"
-                        ? "Moderator · finding common ground"
+                        ? "Finding common ground"
                         : `${busy === "spark" ? "Side A" : "Side B"} · preparing a reply`}
                     </span>
                   </div>
@@ -610,7 +626,7 @@ export default function Conversation() {
                   onClick={() => void summarize()}
                   title="Ask the moderator to summarize both sides"
                 >
-                  <span aria-hidden="true">○</span> Ask Orbit
+                  <span aria-hidden="true">○</span> Ask moderator
                 </button>
               </div>
               <div>
@@ -640,15 +656,22 @@ export default function Conversation() {
             className="chat-composer"
             onSubmit={(e) => {
               e.preventDefault();
-              chat ? direct() : start();
+              chat ? direct() : start(edition.online);
             }}
           >
             <textarea
-              aria-label={chat ? "Your direction" : "What do you want to make?"}
+              aria-label={
+                chat
+                  ? "Your direction"
+                  : edition.online
+                    ? "Sample mission"
+                    : "What do you want to make?"
+              }
               placeholder={
                 chat ? "Jump in with a direction…" : "What do you want to make?"
               }
-              value={draft}
+              value={edition.online && !chat ? sampleMission : draft}
+              readOnly={edition.online && !chat}
               maxLength={chat ? 1500 : 4000}
               rows={2}
               onChange={(e) => setDraft(e.target.value)}
@@ -659,7 +682,8 @@ export default function Conversation() {
                   !e.nativeEvent.isComposing
                 ) {
                   e.preventDefault();
-                  if (draft.trim()) chat ? direct() : start();
+                  if (draft.trim() || (edition.online && !chat))
+                    chat ? direct() : start(edition.online);
                 }
               }}
             />
@@ -667,13 +691,23 @@ export default function Conversation() {
               type="submit"
               className="send-button"
               aria-label={
-                chat ? "Add direction and pause" : "Start live conversation"
+                chat
+                  ? "Add direction and pause"
+                  : edition.online
+                    ? "Start sample debate"
+                    : "Start live conversation"
               }
               disabled={
-                !draft.trim() || (!chat && (!status?.available || !!busy))
+                edition.online && !chat
+                  ? !!busy
+                  : !draft.trim() || (!chat && (!status?.available || !!busy))
               }
             >
-              <ArrowUp size={19} />
+              {edition.online && !chat ? (
+                <Play size={17} />
+              ) : (
+                <ArrowUp size={19} />
+              )}
             </button>
           </form>
           <div className="composer-caption">
@@ -684,9 +718,11 @@ export default function Conversation() {
                   : chat.mode === "sample"
                     ? "Sample conversation · no model usage"
                     : "Up to 6 replies per run · uses your Codex allowance"
-                : "You set the direction. They debate it."}
+                : edition.online
+                  ? "Play the authored sample · no model usage"
+                  : "You set the direction. They debate it."}
             </span>
-            {!chat && (
+            {!chat && !edition.online && (
               <button onClick={() => start(true)}>Try a sample ↗</button>
             )}
           </div>
@@ -741,8 +777,8 @@ export default function Conversation() {
               </button>
             </header>
             <p>
-              Two debating agents, with Orbit as moderator. Choose their models
-              and perspectives.
+              Two debating agents, with the Moderator. Choose their models and
+              perspectives.
             </p>
             {(["spark", "anchor"] as const).map((who) => (
               <div className="agent-preferences" key={who}>
@@ -771,24 +807,32 @@ export default function Conversation() {
                     aria-label={`${names[who]} model`}
                     list="available-models"
                     value={activeModels[who]}
-                    disabled={!!busy}
+                    disabled={!!busy || edition.online}
                     maxLength={80}
-                    placeholder={status?.defaultModel || "Codex default"}
+                    placeholder={
+                      edition.online
+                        ? "Available after approval"
+                        : status?.defaultModel || "Codex default"
+                    }
                     onChange={(e) => changeModel(who, e.target.value)}
                   />
                 </label>
               </div>
             ))}
             <details>
-              <summary>Orbit · moderator model</summary>
+              <summary>Moderator model</summary>
               <label>
-                Orbit · used only when you summarize
+                Moderator · used only when you summarize
                 <input
                   list="available-models"
-                  disabled={!!busy}
+                  disabled={!!busy || edition.online}
                   value={activeModels.moderator}
                   maxLength={80}
-                  placeholder={status?.defaultModel || "Codex default"}
+                  placeholder={
+                    edition.online
+                      ? "Available after approval"
+                      : status?.defaultModel || "Codex default"
+                  }
                   onChange={(e) => changeModel("moderator", e.target.value)}
                 />
               </label>
@@ -801,10 +845,16 @@ export default function Conversation() {
               ))}
             </datalist>
             <p className="settings-help">
-              Suggestions come from your local Codex model cache. Availability
-              depends on your account. Leave blank to use{" "}
-              {status?.defaultModel || "the Codex default"}. Pause to change
-              models; previous replies keep their model labels.
+              {edition.online ? (
+                "This preview plays an authored debate. Model selection and live responses will be available after hosted ChatGPT plan access is approved and implemented. Signing into this site does not grant AI usage."
+              ) : (
+                <>
+                  Suggestions come from your local Codex model cache.
+                  Availability depends on your account. Leave blank to use{" "}
+                  {status?.defaultModel || "the Codex default"}. Pause to change
+                  models; previous replies keep their model labels.
+                </>
+              )}
             </p>
             <div className="settings-connection">
               <span>
@@ -817,16 +867,27 @@ export default function Conversation() {
               </span>
               <button onClick={() => void refreshStatus()}>Refresh</button>
             </div>
-            {!status?.available && (
+            {!status?.available && !edition.online && (
               <code>
                 npm ci
                 <br />
                 npm run local
               </code>
             )}
-            <a className="classic-link" href="/classic">
-              Open the original staged prototype ↗
-            </a>
+            {edition.online ? (
+              <a
+                className="classic-link"
+                href="https://github.com/vulpes922/agent-arena/tree/local"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Get the local edition · repository invitation required ↗
+              </a>
+            ) : (
+              <a className="classic-link" href="/classic">
+                Open the original staged prototype ↗
+              </a>
+            )}
           </section>
         </div>
       )}

@@ -21,12 +21,12 @@ On a Mac, after installing dependencies, double-click `start-local.command`. On 
 
 ## Your first product idea
 
-1. Open Agent settings to choose Spark and Anchor's perspectives and models.
+1. Open Agent settings to choose Defender and Challenger's perspectives and models.
 2. Enter what you want to make.
 3. Watch the agents reply to each other in the conversation.
 4. Pause anytime, or send a direction to pause and steer the next reply.
 5. Continue the same conversation for another six replies.
-6. Ask Orbit to summarize, or export the entire discussion.
+6. Ask moderator to summarize, or export the entire discussion.
 
 The result is a product direction. Agent Arena does not automatically implement or deploy that product. Replies appear as each model call completes, rather than token by token. Your original staged arenas remain available at `/classic`.
 
@@ -34,7 +34,7 @@ The result is a product direction. Agent Arena does not automatically implement 
 
 The launcher reuses the Codex account already signed in on your computer. If this is a shared computer, check the CLI account before starting. To deliberately change that shared Codex login, run `npx codex logout`, then `npx codex login`. Logging out affects other Codex CLI use on that computer too; Agent Arena never does it automatically.
 
-Eligible account access and remaining Codex usage are required. Each reply uses one model call. Agents take turns, with up to six replies per run before an automatic pause. Continue to allow another six. Ask Orbit uses one additional call.
+Eligible account access and remaining Codex usage are required. Each reply uses one model call. Agents take turns, with up to six replies per run before an automatic pause. Continue to allow another six. Ask moderator uses one additional call.
 
 ## Troubleshooting
 
