@@ -6,23 +6,22 @@ A playful space where two AI perspectives challenge an idea, respond to your dir
 
 ![Agent Arena interface](docs/arena-home.png)
 
-## Try it locally
+## Online edition — approval pending
 
-Requires Node.js 22.13+ and a Codex account with available usage.
+This is the `online` branch. OpenAI's Sign in with ChatGPT interest form has been submitted for **sign-in and visitors' own ChatGPT plan usage**. Submission is not approval. Hosted inference and plan authorization are not implemented yet.
+
+[Private online preview](https://agent-arena-jh-2026.bryan922.chatgpt.site) · [Application and implementation checklist](docs/HOSTED-APPROVAL.md) · [Working local edition](https://github.com/vulpes922/agent-arena/tree/local)
+
+This edition demonstrates the authored sample, human direction, history, and editable/exportable blueprint. Its generation endpoint returns `503 approval_required`, including in development. It never invokes the developer's local Codex account. Signing into the private preview only grants site access.
+
+For real debates today, switch to `local` and follow its setup guide. The GitHub repository remains private, so testers need an invitation or a source ZIP from the owner. `main` preserves the original prototype.
+
+To develop this online preview with Node.js 22.13+:
 
 ```sh
 npm ci
-npx codex login
 npm run dev
 ```
-
-Open the localhost URL printed in your terminal. If you already use Codex, the included CLI reuses your existing sign-in. No API key is needed. Your global Codex installation is unchanged.
-
-On this prepared Mac checkout, you can also double-click `start-local.command` or run `./start-local.command`. It finds your installed Node or the Codex-bundled Node runtime and launches the installed dependencies. Leave that Terminal window open while using the app.
-
-The project includes a pinned official Codex CLI because older CLIs can reject newer subscription models. Blank model preferences use the top-level model from your local Codex configuration, falling back to the CLI default. If your account rejects that model, choose an available model in **Connection → Model preferences**.
-
-The hosted private preview runs the **authored sample** only. It cannot access the Codex subscription on your computer. To use your own prompts with real AI, run locally.
 
 ## The experience
 
@@ -36,13 +35,11 @@ The hosted private preview runs the **authored sample** only. It cannot access t
 
 Six perspectives are available: Visionary, Pragmatist, User advocate, Contrarian, Strategist, and Craftsperson. These are separate prompted turns, not claims of independent model identities.
 
-One complete live arena uses eight Codex calls: one brief, two openings, two critiques, two revisions, and one synthesis. Team turns run concurrently, with a maximum of two active calls. Live use consumes your subscription allowance; it is not unlimited or free inference.
+In the local edition, one complete live arena uses eight Codex calls: one brief, two openings, two critiques, two revisions, and one synthesis. Team turns run concurrently, with a maximum of two active calls. Live use consumes your subscription allowance; it is not unlimited or free inference.
 
 ## Demo in 90 seconds
 
 Select **Watch an idea evolve** for the reliable, clearly labeled Sidequest sample. Review the brief, start the opening round, pin a claim, and proceed to Crossfire. Add a direction, refine, and show the final editable blueprint.
-
-For a live demo, try: “Create a playful app that helps neighbors lend everyday tools without awkward group chats. Buildable in two days. No payments, ratings, or location tracking.” After Crossfire add: “Use a shared shelf for one apartment building. No maps or reputation scores.” Show how the revisions and final blueprint reflect that intervention. Live rounds may take a minute each.
 
 ## Development
 
@@ -52,25 +49,22 @@ npm run typecheck
 npm run build
 ```
 
-React 19, TypeScript, Vinext/Vite, and custom CSS. Avatars are original SVG artwork. Hosted builds run on a Cloudflare Worker using the Sites starter; local live inference is a Vite development middleware and is deliberately absent from hosted builds. `npm start` previews the production sample build; use `npm run dev` for live Codex.
+React 19, TypeScript, Vinext/Vite, and custom CSS. Avatars are original SVG artwork. Hosted builds run on a Cloudflare Worker using the Sites starter; the online branch never registers the local Codex middleware. Both `npm run dev` and `npm start` serve sample-only behavior here.
 
 Main files:
 
 - `app/page.tsx`: setup, round controls, intervention, history, and blueprint editor.
 - `app/globals.css`: responsive interface and motion.
 - `lib/debate-contract.mjs`: stage prompts, request validation, output contracts.
-- `scripts/codex-provider.mjs`: bounded, cancellable Codex subprocesses.
-- `scripts/vite/arena-local-plugin.mjs`: localhost-only live endpoint with same-origin checks.
+- `app/api/arena/status/route.ts`: explicitly reports approval pending.
+- `app/api/arena/generate/route.ts`: rejects hosted generation until integration is approved and implemented.
+- `scripts/codex-provider.mjs` and `scripts/vite/arena-local-plugin.mjs`: retained reference implementation, not registered in this edition.
 - `lib/sample.ts`: explicitly authored walkthrough.
-
-Optional environment variables: `ARENA_CODEX_BIN`, `ARENA_TEAM_MODEL`, and `ARENA_MODERATOR_MODEL`. Model fields in the interface override environment defaults. Choose a lighter moderator only if that model is available to your Codex account.
 
 ## Data and limits
 
 - The most recent 12 arenas are saved in this browser’s local storage. There is no server database or cross-device sync. Export anything you want to keep.
-- Prompts and debate history are sent through Codex to generate live responses. Credentials are handled by Codex, never by the browser or repository.
-- Turns use a temporary working directory, ephemeral sessions, read-only sandboxing, and disabled shell, web, plugin, app, browser, computer, hook, and multi-agent features. User configuration is ignored except for the selected model preference. Temporary response files are removed after each turn.
-- Requests have size limits, structured-response validation, and a 150-second timeout. Stop cancels the current round; completed rounds stay saved. A failed two-agent round can be retried as a whole.
+- The online preview makes no model requests and stores no plan credentials. The local edition documents its separate inference behavior.
 - The sample is fixed content. It saves director notes but does not dynamically generate a new debate for arbitrary prompts.
 - This is an idea-development prototype, not a code generator. The result is a product/MVP blueprint. Agreement between agents is not evidence that a claim is true; assumptions and open questions remain visible.
 

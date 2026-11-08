@@ -161,7 +161,7 @@ export default function Arena() {
       setConnection({
         available: false,
         reason:
-          "Live AI is unavailable here. Run the project locally with Codex signed in.",
+          "Hosted ChatGPT plan access is awaiting approval. Try the sample or use the local edition.",
       });
     }
   }, []);
@@ -300,7 +300,7 @@ export default function Arena() {
       result = (await response.json()) as typeof result;
     } catch {
       throw new Error(
-        "Live debates require the local development server. Open Connection for setup instructions.",
+        "Hosted live debates are awaiting approval. Open Connection for the local edition.",
       );
     }
     if (!response.ok)
@@ -575,7 +575,7 @@ export default function Arena() {
               <span
                 className={`connection-dot ${activeMode === "live" ? "connected" : ""}`}
               />
-              {activeMode === "live" ? "Local Codex" : "Sample mode"}
+              {activeMode === "live" ? "Live arena" : "Sample mode"}
               <ChevronDown size={12} />
             </button>
             <span className="prototype-badge">PROTOTYPE</span>
@@ -589,6 +589,10 @@ export default function Arena() {
           </div>
         </header>
         <main>
+          <aside className="online-notice" aria-label="Online edition status">
+            <span><strong>Online preview</strong> · ChatGPT plan access requested. Explore the sample while approval is pending.</span>
+            <button onClick={() => setModal("settings")}>Try live locally <ArrowUpRight size={14} /></button>
+          </aside>
           {isSetup ? (
             <>
               <section className="welcome-heading">
@@ -729,7 +733,7 @@ export default function Arena() {
                     <p>
                       {mode === "live" ? (
                         <>
-                          <Radio size={12} /> Powered by your local Codex
+                          <Radio size={12} /> Powered by your ChatGPT plan
                           subscription
                         </>
                       ) : (
@@ -845,7 +849,7 @@ export default function Arena() {
                         setMode("live");
                       } else
                         setToast(
-                          "Mission added. Connect local Codex to debate your own prompt.",
+                          "Mission added. Use the local edition to debate your own prompt while hosted access is pending.",
                         );
                     }}
                   >
@@ -925,7 +929,7 @@ export default function Arena() {
                       these agents aren’t calling a live model.
                     </span>
                     <button onClick={() => setModal("settings")}>
-                      Connect live AI <ArrowUpRight size={12} />
+                      Live access status <ArrowUpRight size={12} />
                     </button>
                   </div>
                 )}
@@ -1200,7 +1204,7 @@ export default function Arena() {
                       </strong>
                       <p>
                         {session.mode === "live"
-                          ? "Running through your local Codex account. This may take a minute."
+                          ? "Generating agent responses. This may take a minute."
                           : "Playing the illustrative sample."}
                       </p>
                     </div>
@@ -1372,16 +1376,16 @@ export default function Arena() {
             <div>
               <strong>
                 {connection?.available
-                  ? "Local Codex is connected"
-                  : "Sample experience available"}
+                  ? "ChatGPT plan connected"
+                  : "Hosted access awaiting approval"}
               </strong>
-              <p>{connection?.reason || "Checking your local connection…"}</p>
+              <p>{connection?.reason || "Checking hosted access…"}</p>
             </div>
           </div>
           <p className="modal-description">
-            Live debates use the Codex CLI signed in on your computer. Your
-            ChatGPT credentials never enter the browser or the GitHub
-            repository.
+            We have applied for visitors to use their own ChatGPT plans. Live
+            online debates will become available after approval and integration.
+            Signing into this preview does not enable AI usage.
           </p>
           <div className="mode-options">
             <button
@@ -1393,8 +1397,8 @@ export default function Arena() {
               }}
             >
               <Radio size={17} />
-              <strong>Live Codex</strong>
-              <small>Your prompt, real agent responses</small>
+              <strong>Your ChatGPT plan</strong>
+              <small>Awaiting approval · not available yet</small>
               {mode === "live" && <Check size={16} />}
             </button>
             <button
@@ -1416,50 +1420,11 @@ export default function Arena() {
               Start a new arena to change its connection mode.
             </p>
           )}
-          <details className="model-settings">
-            <summary>
-              Model preferences <ChevronDown size={14} />
-            </summary>
-            <p className="help-text">
-              Optional Codex model IDs. Leave blank to use your configured Codex
-              model. You can choose a lighter moderator model available to your
-              account.
-            </p>
-            <label>
-              Team agents
-              <input
-                value={models.team}
-                onChange={(e) => setModels({ ...models, team: e.target.value })}
-                placeholder="Codex default"
-                maxLength={80}
-              />
-            </label>
-            <label>
-              Moderator
-              <input
-                value={models.moderator}
-                onChange={(e) =>
-                  setModels({ ...models, moderator: e.target.value })
-                }
-                placeholder="Codex default"
-                maxLength={80}
-              />
-            </label>
-          </details>
           <div className="setup-instructions">
-            <strong>Run live on your computer</strong>
-            <code>
-              npm install
-              <br />
-              codex login
-              <br />
-              npm run dev
-            </code>
-            <p>
-              Open the local URL printed in your terminal. Live debates consume
-              your existing Codex allowance. The hosted preview runs sample mode
-              only.
-            </p>
+            <strong>Want to debate your own idea today?</strong>
+            <p>The local edition runs on your computer using your own Codex sign-in. Repository access is by invitation.</p>
+            <a href="https://github.com/vulpes922/agent-arena/tree/local" target="_blank" rel="noreferrer">Open the local edition ↗</a>
+            <p>The online preview plays an authored sample. It does not consume a ChatGPT plan or generate responses.</p>
           </div>
           <div className="modal-actions">
             <button
@@ -1545,7 +1510,7 @@ export default function Arena() {
         <Modal title="Pick a starting point." onClose={() => setModal(null)}>
           <p className="modal-description">
             Use one of these missions, then make it your own. Custom missions
-            require the local Codex connection.
+            are available in the local edition while hosted plan access is pending.
           </p>
           {[
             samplePrompt,

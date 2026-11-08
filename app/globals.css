@@ -2798,3 +2798,29 @@ main {
     scroll-behavior: auto !important;
   }
 }
+.online-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 24px;
+  padding: 14px 18px;
+  border: 1px solid #d9d8ed;
+  border-radius: 14px;
+  background: #f1f0fb;
+  color: #55516d;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.online-notice button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  color: #5445b3;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
