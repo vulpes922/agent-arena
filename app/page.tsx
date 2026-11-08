@@ -406,6 +406,47 @@ export default function Conversation() {
     chat?.mode === "sample" &&
     chat.messages.filter((m) => m.speaker === "spark" || m.speaker === "anchor")
       .length >= sampleReplies.length;
+  const participants = (
+    <nav className="debate-participants" aria-label="Debate participants">
+      <button
+        className={`participant spark ${busy === "spark" ? "speaking" : ""}`}
+        onClick={() => setSettings(true)}
+        aria-label="Spark, side A. Open agent settings"
+      >
+        <span className="participant-symbol" aria-hidden="true">
+          ✳
+        </span>
+        <strong>Spark</strong>
+        <span className="participant-role">Side A · {activeRoles.spark}</span>
+      </button>
+      <div className="debate-middle">
+        <span className="debate-versus" aria-hidden="true">
+          vs
+        </span>
+        <button
+          className={`participant orbit ${busy === "moderator" ? "speaking" : ""}`}
+          onClick={() => setSettings(true)}
+          aria-label="Orbit, moderator. Open agent settings"
+        >
+          <span className="orbit-name">
+            <span aria-hidden="true">○</span> Orbit
+          </span>
+          <span className="participant-role">Moderator</span>
+        </button>
+      </div>
+      <button
+        className={`participant anchor ${busy === "anchor" ? "speaking" : ""}`}
+        onClick={() => setSettings(true)}
+        aria-label="Anchor, side B. Open agent settings"
+      >
+        <span className="participant-symbol" aria-hidden="true">
+          ✦
+        </span>
+        <strong>Anchor</strong>
+        <span className="participant-role">Side B · {activeRoles.anchor}</span>
+      </button>
+    </nav>
+  );
   return (
     <div className="conversation-app">
       <header className="chat-header">
@@ -444,23 +485,21 @@ export default function Conversation() {
           </button>
         </div>
       </header>
+      {chat && <div className="debate-roster">{participants}</div>}
       <main className="chat-main">
         {!chat ? (
           <section className="empty-chat">
-            <div className="duo">
-              <span className="orb spark">✳</span>
-              <span className="orb anchor">✦</span>
-            </div>
-            <p className="chat-eyebrow">TWO MINDS. YOUR DIRECTION.</p>
+            {participants}
+            <p className="chat-eyebrow">TWO SIDES. ONE MODERATOR.</p>
             <h1>
               Let the ideas
               <br />
               talk it out.
             </h1>
             <p>
-              Give two agents something to make.
+              Spark and Anchor debate your idea.
               <br />
-              Watch them challenge it, then jump in.
+              Ask Orbit to bring the strongest points together.
             </p>
           </section>
         ) : (
@@ -493,9 +532,9 @@ export default function Conversation() {
                     <strong>{names[m.speaker]}</strong>
                     <span>
                       {m.speaker === "spark" || m.speaker === "anchor"
-                        ? activeRoles[m.speaker]
+                        ? `${m.speaker === "spark" ? "Side A" : "Side B"} · ${activeRoles[m.speaker]}`
                         : m.speaker === "moderator"
-                          ? "Summary"
+                          ? "Moderator · recap"
                           : "Direction"}
                     </span>
                     {m.model && (
@@ -520,8 +559,8 @@ export default function Conversation() {
                     <strong>{names[busy]}</strong>
                     <span>
                       {busy === "moderator"
-                        ? "Finding the thread"
-                        : "Thinking about the next reply"}
+                        ? "Moderator · finding common ground"
+                        : `${busy === "spark" ? "Side A" : "Side B"} · preparing a reply`}
                     </span>
                   </div>
                   <div className="thinking">
@@ -569,8 +608,9 @@ export default function Conversation() {
                     !!busy || !chat.messages.some((m) => m.speaker === "anchor")
                   }
                   onClick={() => void summarize()}
+                  title="Ask the moderator to summarize both sides"
                 >
-                  Summarize
+                  <span aria-hidden="true">○</span> Ask Orbit
                 </button>
               </div>
               <div>
@@ -644,7 +684,7 @@ export default function Conversation() {
                   : chat.mode === "sample"
                     ? "Sample conversation · no model usage"
                     : "Up to 6 replies per run · uses your Codex allowance"
-                : "Your idea. Two perspectives."}
+                : "You set the direction. They debate it."}
             </span>
             {!chat && (
               <button onClick={() => start(true)}>Try a sample ↗</button>
@@ -691,7 +731,7 @@ export default function Conversation() {
             }}
           >
             <header>
-              <h2>Your two minds</h2>
+              <h2>Your debate team</h2>
               <button
                 aria-label="Close settings"
                 onClick={() => setSettings(false)}
@@ -700,7 +740,10 @@ export default function Conversation() {
                 <X size={19} />
               </button>
             </header>
-            <p>Choose a different model and perspective for each agent.</p>
+            <p>
+              Two debating agents, with Orbit as moderator. Choose their models
+              and perspectives.
+            </p>
             {(["spark", "anchor"] as const).map((who) => (
               <div className="agent-preferences" key={who}>
                 <div className={`pref-name ${who}`}>
@@ -737,7 +780,7 @@ export default function Conversation() {
               </div>
             ))}
             <details>
-              <summary>Moderator model</summary>
+              <summary>Orbit · moderator model</summary>
               <label>
                 Orbit · used only when you summarize
                 <input

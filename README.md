@@ -2,7 +2,7 @@
 
 A minimal conversation between two AI agents. Describe something you want to make, watch Spark and Anchor respond to each other, and jump in with your own direction.
 
-![Minimal conversation view, showing the authored sample](docs/arena-conversation.png)
+![Two-sided debate with a moderator, showing the authored sample](docs/arena-debate.png)
 
 ## Run it
 
@@ -25,7 +25,7 @@ The launcher uses the project's official Codex CLI and opens sign-in if needed. 
 - Sending your own direction pauses the debate and adds it to the transcript. Continue when ready; the next agent receives that direction.
 - Each run allows up to six replies, then pauses. Continue for another six. Each reply uses one Codex request and consumes your own account's allowance.
 - Open **Agent settings** to choose a separate model for Spark and Anchor. Model suggestions come from the local Codex cache; you can also enter an exact model ID. Account availability is checked by Codex when you run a turn. Pause before changing models. Earlier messages keep their original model labels.
-- **Summarize** adds an Orbit checkpoint without ending the conversation. Its model is independently selectable in settings, and it uses one request.
+- **Ask Orbit** asks the moderator to summarize both sides and adds a checkpoint without ending the conversation. Its model is independently selectable in settings, and it uses one request.
 - Export the complete transcript as Markdown. The last 12 conversations are saved in this browser; open Recent conversations on the home screen to resume one.
 
 The authored sample makes no model calls. Its replies are fixed and do not adapt to your notes. The original staged prototype and its existing saved arenas remain at `/classic` (linked from settings).

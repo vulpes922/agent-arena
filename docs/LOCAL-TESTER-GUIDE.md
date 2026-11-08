@@ -34,7 +34,7 @@ The result is a product direction. Agent Arena does not automatically implement 
 
 The launcher reuses the Codex account already signed in on your computer. If this is a shared computer, check the CLI account before starting. To deliberately change that shared Codex login, run `npx codex logout`, then `npx codex login`. Logging out affects other Codex CLI use on that computer too; Agent Arena never does it automatically.
 
-Eligible account access and remaining Codex usage are required. Each reply uses one model call. Agents take turns, with up to six replies per run before an automatic pause. Continue to allow another six. Summarize uses one additional call.
+Eligible account access and remaining Codex usage are required. Each reply uses one model call. Agents take turns, with up to six replies per run before an automatic pause. Continue to allow another six. Ask Orbit uses one additional call.
 
 ## Troubleshooting
 
