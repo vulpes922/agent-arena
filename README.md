@@ -1,81 +1,58 @@
 # Agent Arena
 
-**Ideas enter. Better ideas leave.**
+**Two AI perspectives. One moderator. You set the direction.**
 
-A playful space where two AI perspectives challenge an idea, respond to your direction, and turn it into an editable product blueprint. Built as a functional prototype for FIG AI Design Makeathon 2026, Track 1.
+Describe something you want to make, watch two agents debate it, and jump in to steer the conversation. Visionary and Pragmatist are the default perspectives; each side and the Moderator can use a separate model in the local edition.
 
-![Agent Arena interface](docs/arena-home.png)
+![Agent Arena: two sides and a moderator](docs/screenshots/overview.jpg)
 
-## Try it locally
+[Mac & Windows setup](docs/SETUP.md) · [User guide](docs/USER-GUIDE.md) · [Development](docs/DEVELOPMENT.md)
 
-Requires Node.js 22.13+ and a Codex account with available usage.
+## Choose your edition
+
+| Edition | What works today |
+| --- | --- |
+| [Local](https://github.com/vulpes922/agent-arena/tree/local) | Live conversations using your own Codex login, per-agent models, human direction, moderator recaps, history, and export. |
+| [Online](https://github.com/vulpes922/agent-arena/tree/online) | The same minimal interface with an authored sample. Hosted ChatGPT-plan access is pending approval and implementation. |
+| `main` | Original prototype code baseline, with this documentation pointing to the current editions. |
+
+The repository is private; accept an invitation before cloning. The [online preview](https://agent-arena-jh-2026.bryan922.chatgpt.site) also requires access. Site sign-in does not enable live AI.
+
+## Quick start: local edition
+
+Requires **Node.js 24 LTS recommended (minimum 22.13)**, npm, Git, and your own ChatGPT account with Codex access and available usage. On Windows, run these commands **inside WSL 2/Ubuntu**. Native PowerShell execution is not currently supported by this prototype's agent runner.
 
 ```sh
+git clone --branch local https://github.com/vulpes922/agent-arena.git
+cd agent-arena
 npm ci
-npx codex login
-npm run dev
+npm run local
 ```
 
-Open the localhost URL printed in your terminal. If you already use Codex, the included CLI reuses your existing sign-in. No API key is needed. Your global Codex installation is unchanged.
+Complete the official Codex sign-in if prompted, then open the local URL printed by the terminal, normally `http://127.0.0.1:5173`. Keep the terminal running. No API key is required for ChatGPT sign-in, and the project installs its own Codex CLI.
 
-On this prepared Mac checkout, you can also double-click `start-local.command` or run `./start-local.command`. It finds your installed Node or the Codex-bundled Node runtime and launches the installed dependencies. Leave that Terminal window open while using the app.
+**New to the tools?** Follow the [step-by-step setup guide](docs/SETUP.md) for Mac or Windows, prerequisites, ZIP download, account selection, and troubleshooting. macOS has been exercised locally; the WSL instructions have not been tested end to end on Windows.
 
-The project includes a pinned official Codex CLI because older CLIs can reject newer subscription models. Blank model preferences use the top-level model from your local Codex configuration, falling back to the CLI default. If your account rejects that model, choose an available model in **Connection → Model preferences**.
+To explore without a model account, run `npm run dev` after installing dependencies and choose **Try a sample**.
 
-The hosted private preview runs the **authored sample** only. It cannot access the Codex subscription on your computer. To use your own prompts with real AI, run locally.
+## How it works
 
-## The experience
+1. Choose two perspectives and optionally a model for each participant in **Agent settings**.
+2. Enter your idea. The two agents respond in turn, with replies appearing when each model call finishes.
+3. **Pause** or add your own direction. **Continue** resumes the same conversation, up to six replies per run.
+4. **Ask moderator** for a recap, then continue refining or **Export conversation** as Markdown.
 
-1. **Set the mission.** Describe what you want to make and choose each agent’s role.
-2. **Approve the brief.** Orbit splits your mission into questions and success criteria. Edit the mission and questions before proceeding.
-3. **Opening ideas.** Spark and Anchor propose independently, without seeing each other’s opening answer.
-4. **Crossfire.** Each agent challenges specific claims from the other proposal and suggests alternatives.
-5. **Direct the debate.** Pin useful claims and add constraints between rounds. Each next round waits for your click.
-6. **Refine.** Agents explain what they adopt, revise, defend, or concede.
-7. **Take the blueprint.** Orbit synthesizes the discussion into an MVP brief. Edit it, copy it, or export Markdown.
+<details>
+<summary>See a complete sample debate and moderator recap</summary>
 
-Six perspectives are available: Visionary, Pragmatist, User advocate, Contrarian, Strategist, and Craftsperson. These are separate prompted turns, not claims of independent model identities.
+![Authored sample debate with moderator recap](docs/screenshots/debate.jpg)
 
-One complete live arena uses eight Codex calls: one brief, two openings, two critiques, two revisions, and one synthesis. Team turns run concurrently, with a maximum of two active calls. Live use consumes your subscription allowance; it is not unlimited or free inference.
+</details>
 
-## Demo in 90 seconds
+*Actual screenshot of the authored sample. Sample replies are fixed, use no model calls, and do not adapt to your notes.*
 
-Select **Watch an idea evolve** for the reliable, clearly labeled Sidequest sample. Review the brief, start the opening round, pin a claim, and proceed to Crossfire. Add a direction, refine, and show the final editable blueprint.
+Each live reply uses your signed-in account's usage. The last 12 conversations are saved in the current browser; there is no cloud sync. The output is a discussion and product direction, not an automatically implemented application. Read the [user guide](docs/USER-GUIDE.md) for model selection, context limits, privacy, and controls.
 
-For a live demo, try: “Create a playful app that helps neighbors lend everyday tools without awkward group chats. Buildable in two days. No payments, ratings, or location tracking.” After Crossfire add: “Use a shared shelf for one apartment building. No maps or reputation scores.” Show how the revisions and final blueprint reflect that intervention. Live rounds may take a minute each.
+## Contributing
 
-## Development
-
-```sh
-npm test
-npm run typecheck
-npm run build
-```
-
-React 19, TypeScript, Vinext/Vite, and custom CSS. Avatars are original SVG artwork. Hosted builds run on a Cloudflare Worker using the Sites starter; local live inference is a Vite development middleware and is deliberately absent from hosted builds. `npm start` previews the production sample build; use `npm run dev` for live Codex.
-
-Main files:
-
-- `app/page.tsx`: setup, round controls, intervention, history, and blueprint editor.
-- `app/globals.css`: responsive interface and motion.
-- `lib/debate-contract.mjs`: stage prompts, request validation, output contracts.
-- `scripts/codex-provider.mjs`: bounded, cancellable Codex subprocesses.
-- `scripts/vite/arena-local-plugin.mjs`: localhost-only live endpoint with same-origin checks.
-- `lib/sample.ts`: explicitly authored walkthrough.
-
-Optional environment variables: `ARENA_CODEX_BIN`, `ARENA_TEAM_MODEL`, and `ARENA_MODERATOR_MODEL`. Model fields in the interface override environment defaults. Choose a lighter moderator only if that model is available to your Codex account.
-
-## Data and limits
-
-- The most recent 12 arenas are saved in this browser’s local storage. There is no server database or cross-device sync. Export anything you want to keep.
-- Prompts and debate history are sent through Codex to generate live responses. Credentials are handled by Codex, never by the browser or repository.
-- Turns use a temporary working directory, ephemeral sessions, read-only sandboxing, and disabled shell, web, plugin, app, browser, computer, hook, and multi-agent features. User configuration is ignored except for the selected model preference. Temporary response files are removed after each turn.
-- Requests have size limits, structured-response validation, and a 150-second timeout. Stop cancels the current round; completed rounds stay saved. A failed two-agent round can be retried as a whole.
-- The sample is fixed content. It saves director notes but does not dynamically generate a new debate for arbitrary prompts.
-- This is an idea-development prototype, not a code generator. The result is a product/MVP blueprint. Agreement between agents is not evidence that a claim is true; assumptions and open questions remain visible.
-
-## Track 1 design focus
-
-The human-control moment is explicit: the agents propose and challenge, then pause for the director to pin a claim or introduce a constraint. The next revision shows what changed, and the human edits the final artifact. The prototype makes a multi-agent workflow understandable through named characters, distinct phases, specific rebuttals, and visible pause points.
-
-This repository is a prototype deliverable; event submission, final pitch materials, and changing the preview’s private audience are separate steps.
+Use `local` for local inference work and `online` for the hosted preview. Preserve the online approval gate when synchronizing UI changes. See [development notes](docs/DEVELOPMENT.md) for commands, architecture, and checks.
