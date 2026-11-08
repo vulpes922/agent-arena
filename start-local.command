@@ -16,4 +16,4 @@ if [[ ! -f node_modules/vinext/dist/cli.js ]]; then
   exit 1
 fi
 export PATH="$(dirname -- "$arena_node"):$PWD/node_modules/.bin:$PATH"
-exec "$arena_node" scripts/run-framework.mjs dev "$@"
+exec "$arena_node" scripts/start-local.mjs "$@"

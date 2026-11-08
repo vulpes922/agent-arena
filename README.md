@@ -2,6 +2,8 @@
 
 **Ideas enter. Better ideas leave.**
 
+**Local edition** · [Tester setup](docs/LOCAL-TESTER-GUIDE.md) · [Online approval branch](https://github.com/vulpes922/agent-arena/tree/online)
+
 A playful space where two AI perspectives challenge an idea, respond to your direction, and turn it into an editable product blueprint. Built as a functional prototype for FIG AI Design Makeathon 2026, Track 1.
 
 ![Agent Arena interface](docs/arena-home.png)
@@ -11,9 +13,10 @@ A playful space where two AI perspectives challenge an idea, respond to your dir
 Requires Node.js 22.13+ and a Codex account with available usage.
 
 ```sh
+git clone --branch local https://github.com/vulpes922/agent-arena.git
+cd agent-arena
 npm ci
-npx codex login
-npm run dev
+npm run local
 ```
 
 Open the localhost URL printed in your terminal. If you already use Codex, the included CLI reuses your existing sign-in. No API key is needed. Your global Codex installation is unchanged.

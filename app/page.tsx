@@ -1449,11 +1449,9 @@ export default function Arena() {
           <div className="setup-instructions">
             <strong>Run live on your computer</strong>
             <code>
-              npm install
+              npm ci
               <br />
-              codex login
-              <br />
-              npm run dev
+              npm run local
             </code>
             <p>
               Open the local URL printed in your terminal. Live debates consume
