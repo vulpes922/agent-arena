@@ -1,6 +1,6 @@
 # Agent Arena · online edition
 
-A minimal two-sided debate: **Defender** builds and defends the strongest idea in blue; **Challenger** tests its assumptions in orange. A neutral **Moderator** brings both sides together. The online and local branches share the same conversation interface.
+A minimal two-sided debate: **Visionary** and **Pragmatist** debate from their selected perspectives, shown in blue and orange. The selected perspective is the participant name; neither side has a fixed defender or challenger assignment. A neutral **Moderator** brings both sides together. The online and local branches share the same conversation interface.
 
 [Private online preview](https://agent-arena-jh-2026.bryan922.chatgpt.site) · [Working local edition](https://github.com/vulpes922/agent-arena/tree/local) · [Hosted access application](docs/HOSTED-APPROVAL.md)
 
@@ -34,3 +34,5 @@ npm run build
 The last 12 conversations are saved in this browser. There is no server history or cross-device sync. The output is a discussion and product direction, not an automatically built application. Agent agreement is not factual verification.
 
 Keep shared interface files synchronized with `local`. Preserve the online-only API gate, Vite configuration, edition setting, and approval documentation when merging updates. Internal speaker IDs remain stable so saved conversations continue to load under the new display names.
+
+Participant names follow the selected perspectives. Blue and orange distinguish the two sides; either side can propose, challenge, or concede. The authored sample uses Visionary and Pragmatist.
