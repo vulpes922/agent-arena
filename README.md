@@ -1,12 +1,26 @@
 # Agent Arena · local edition
 
-A minimal conversation between two AI agents. Describe something you want to make, watch the Visionary and Pragmatist respond to each other, and jump in with your own direction.
+**Two AI perspectives. One moderator. You set the direction.**
 
-![Two-sided debate with a moderator, showing the authored sample](docs/arena-debate.png)
+Describe something you want to make, watch two agents debate it, and jump in to steer the conversation. Visionary and Pragmatist are the default perspectives; each side and the Moderator can use a separate model in the local edition.
 
-## Run it
+![Agent Arena: two sides and a moderator](docs/screenshots/overview.jpg)
 
-Requires Node.js 22.13+ and a Codex account with available usage. The repository is private; testers need an invitation.
+[Mac & Windows setup](docs/SETUP.md) · [User guide](docs/USER-GUIDE.md) · [Development](docs/DEVELOPMENT.md)
+
+## Choose your edition
+
+| Edition | What works today |
+| --- | --- |
+| [Local](https://github.com/vulpes922/agent-arena/tree/local) | Live conversations using your own Codex login, per-agent models, human direction, moderator recaps, history, and export. |
+| [Online](https://github.com/vulpes922/agent-arena/tree/online) | The same minimal interface with an authored sample. Hosted ChatGPT-plan access is pending approval and implementation. |
+| `main` | Original prototype code baseline, with this documentation pointing to the current editions. |
+
+The repository is private; accept an invitation before cloning. The [online preview](https://agent-arena-jh-2026.bryan922.chatgpt.site) also requires access. Site sign-in does not enable live AI.
+
+## Quick start: local edition
+
+Requires **Node.js 24 LTS recommended (minimum 22.13)**, npm, Git, and your own ChatGPT account with Codex access and available usage. On Windows, run these commands **inside WSL 2/Ubuntu**. Native PowerShell execution is not currently supported by this prototype's agent runner.
 
 ```sh
 git clone --branch local https://github.com/vulpes922/agent-arena.git
@@ -15,51 +29,30 @@ npm ci
 npm run local
 ```
 
-The launcher uses the project's official Codex CLI and opens sign-in if needed. On this prepared Mac checkout, double-click `start-local.command` or run `./start-local.command`. Open the terminal's local URL and keep the terminal running. `npm run doctor` checks dependencies and sign-in.
+Complete the official Codex sign-in if prompted, then open the local URL printed by the terminal, normally `http://127.0.0.1:5173`. Keep the terminal running. No API key is required for ChatGPT sign-in, and the project installs its own Codex CLI.
 
-## Use it
+**New to the tools?** Follow the [step-by-step setup guide](docs/SETUP.md) for Mac or Windows, prerequisites, ZIP download, account selection, and troubleshooting. macOS has been exercised locally; the WSL instructions have not been tested end to end on Windows.
 
-- Type your idea and start. the Visionary and Pragmatist take turns; each sees the preceding reply.
-- Replies appear when each model call finishes. This is live inference, not token-by-token streaming.
-- **Pause** cancels the in-progress reply. **Continue** resumes with the next agent, keeping all completed messages.
-- Sending your own direction pauses the debate and adds it to the transcript. Continue when ready; the next agent receives that direction.
-- Each run allows up to six replies, then pauses. Continue for another six. Each reply uses one Codex request and consumes your own account's allowance.
-- Open **Agent settings** to choose a separate model for the Visionary and Pragmatist. Model suggestions come from the local Codex cache; you can also enter an exact model ID. Account availability is checked by Codex when you run a turn. Pause before changing models. Earlier messages keep their original model labels.
-- **Ask moderator** summarizes both sides and adds a checkpoint without ending the conversation. Its model is independently selectable in settings, and it uses one request.
-- Export the complete transcript as Markdown. The last 12 conversations are saved in this browser; open Recent conversations on the home screen to resume one.
+To explore without a model account, run `npm run dev` after installing dependencies and choose **Try a sample**.
 
-The authored sample makes no model calls. Its replies are fixed and do not adapt to your notes. The original staged prototype and its existing saved arenas remain at `/classic` (linked from settings).
+## How it works
 
-## Context and limits
+1. Choose two perspectives and optionally a model for each participant in **Agent settings**.
+2. Enter your idea. The two agents respond in turn, with replies appearing when each model call finishes.
+3. **Pause** or add your own direction. **Continue** resumes the same conversation, up to six replies per run.
+4. **Ask moderator** for a recap, then continue refining or **Export conversation** as Markdown.
 
-The visible and exported transcript retains every message. Model requests include the mission, the latest 20 messages, and earlier human directions; agents may not recall older agent details. Restate a decision as a human direction if it must persist. A conversation supports up to 30 human directions. Requests have a 90 KB body limit and a 150-second timeout. Failed or cancelled replies are not added; completed replies remain available.
+<details>
+<summary>See a complete sample debate and moderator recap</summary>
 
-Local credentials stay with Codex. Agent subprocesses use ephemeral sessions, isolated configuration, temporary working directories, and disabled shell, web, app, plugin, browser, computer, hook, and multi-agent features. Agent roles are prompted perspectives, not separate authorities. The result is a discussion and product direction; this app does not automatically implement or deploy the proposed product.
+![Authored sample debate with moderator recap](docs/screenshots/debate.jpg)
 
-## Branches
+</details>
 
-- `local`: live conversation, per-agent models, local onboarding.
-- [online](https://github.com/vulpes922/agent-arena/tree/online): separately maintained hosted sample; visitor ChatGPT plan access has been requested and remains pending.
-- `main`: original prototype baseline.
+*Actual screenshot of the authored sample. Sample replies are fixed, use no model calls, and do not adapt to your notes.*
 
-The hosted preview shares this interface, while live hosted inference remains approval-gated.
+Each live reply uses your signed-in account's usage. The last 12 conversations are saved in the current browser; there is no cloud sync. The output is a discussion and product direction, not an automatically implemented application. Read the [user guide](docs/USER-GUIDE.md) for model selection, context limits, privacy, and controls.
 
-## Development
+## Contributing
 
-```sh
-npm test
-npm run typecheck
-npm run build
-```
-
-React 19, TypeScript, Vinext/Vite. The local Vite middleware supplies inference; production builds cannot use the computer's Codex account. `npm run dev` serves the local app; `npm start` serves a production preview without local inference.
-
-- `app/page.tsx`, `app/conversation.css`: minimal conversation UI.
-- `lib/conversation.mjs`: sequential turn runner, speaker selection, transcript export.
-- `lib/conversation-contract.mjs`: bounded dialogue context and model prompt.
-- `scripts/codex-provider.mjs`: account status, local model suggestions, cancellable model calls.
-- `app/classic/page.tsx`: preserved original staged prototype.
-
-Optional environment defaults: `ARENA_CODEX_BIN`, `ARENA_TEAM_MODEL`, `ARENA_MODERATOR_MODEL`. An explicit model choice in the interface takes priority.
-
-Participant names follow the selected perspectives. Blue and orange distinguish the two sides; either side can propose, challenge, or concede. The authored sample uses Visionary and Pragmatist.
+Use `local` for local inference work and `online` for the hosted preview. Preserve the online approval gate when synchronizing UI changes. See [development notes](docs/DEVELOPMENT.md) for commands, architecture, and checks.
