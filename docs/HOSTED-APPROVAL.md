@@ -50,3 +50,7 @@ The interface's roles are prompt perspectives, not separate factual authorities.
 - [Client registration](https://developers.openai.com/siwc/request-client-id)
 
 Track the response to the submitted contact address. An interest-form receipt does not guarantee approval or availability before the makeathon deadline; the local branch is the working live demonstration path.
+
+## Interface update — November 8, 2026
+
+The online preview now shares the minimal continuous conversation interface with the local edition. Display names are Defender (blue), Challenger (orange), and Moderator (neutral). The submitted application text above remains a record of the original submission. The current local edition runs up to six sequential replies per user-authorized run, with an optional moderator recap; hosted inference remains disabled.

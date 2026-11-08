@@ -1,75 +1,36 @@
-# Agent Arena
+# Agent Arena · online edition
 
-**Ideas enter. Better ideas leave.**
+A minimal two-sided debate: **Defender** builds and defends the strongest idea in blue; **Challenger** tests its assumptions in orange. A neutral **Moderator** brings both sides together. The online and local branches share the same conversation interface.
 
-A playful space where two AI perspectives challenge an idea, respond to your direction, and turn it into an editable product blueprint. Built as a functional prototype for FIG AI Design Makeathon 2026, Track 1.
+[Private online preview](https://agent-arena-jh-2026.bryan922.chatgpt.site) · [Working local edition](https://github.com/vulpes922/agent-arena/tree/local) · [Hosted access application](docs/HOSTED-APPROVAL.md)
 
-![Agent Arena interface](docs/arena-home.png)
+## Approval pending
 
-## Online edition — approval pending
+OpenAI's interest form has been submitted for sign-in and visitors' own ChatGPT plan usage. Submission is not approval. This branch plays a clearly labeled authored sample. Its generation endpoint returns `503 approval_required` in both development and production. It does not load local Codex middleware or use the developer's account. Signing into the private preview grants site access only.
 
-This is the `online` branch. OpenAI's Sign in with ChatGPT interest form has been submitted for **sign-in and visitors' own ChatGPT plan usage**. Submission is not approval. Hosted inference and plan authorization are not implemented yet.
+Play the sample to see alternating replies, pause/continue, human direction, a moderator recap, saved browser history, and Markdown export. Sample responses are fixed: notes are saved but do not alter the replies. Model controls are visible but disabled until hosted access is approved and integrated. For live debates and per-agent models today, use the `local` branch with your own Codex account.
 
-[Private online preview](https://agent-arena-jh-2026.bryan922.chatgpt.site) · [Application and implementation checklist](docs/HOSTED-APPROVAL.md) · [Working local edition](https://github.com/vulpes922/agent-arena/tree/local)
+Both the repository and hosted preview remain private; testing access requires an invitation.
 
-This edition demonstrates the authored sample, human direction, history, and editable/exportable blueprint. Its generation endpoint returns `503 approval_required`, including in development. It never invokes the developer's local Codex account. Signing into the private preview only grants site access.
+## Development
 
-For real debates today, switch to `local` and follow its setup guide. The GitHub repository remains private, so testers need an invitation or a source ZIP from the owner. `main` preserves the original prototype.
-
-To develop this online preview with Node.js 22.13+:
+Requires Node.js 22.13+.
 
 ```sh
 npm ci
 npm run dev
-```
-
-## The experience
-
-1. **Set the mission.** Describe what you want to make and choose each agent’s role.
-2. **Approve the brief.** Orbit splits your mission into questions and success criteria. Edit the mission and questions before proceeding.
-3. **Opening ideas.** Spark and Anchor propose independently, without seeing each other’s opening answer.
-4. **Crossfire.** Each agent challenges specific claims from the other proposal and suggests alternatives.
-5. **Direct the debate.** Pin useful claims and add constraints between rounds. Each next round waits for your click.
-6. **Refine.** Agents explain what they adopt, revise, defend, or concede.
-7. **Take the blueprint.** Orbit synthesizes the discussion into an MVP brief. Edit it, copy it, or export Markdown.
-
-Six perspectives are available: Visionary, Pragmatist, User advocate, Contrarian, Strategist, and Craftsperson. These are separate prompted turns, not claims of independent model identities.
-
-In the local edition, one complete live arena uses eight Codex calls: one brief, two openings, two critiques, two revisions, and one synthesis. Team turns run concurrently, with a maximum of two active calls. Live use consumes your subscription allowance; it is not unlimited or free inference.
-
-## Demo in 90 seconds
-
-Select **Watch an idea evolve** for the reliable, clearly labeled Sidequest sample. Review the brief, start the opening round, pin a claim, and proceed to Crossfire. Add a direction, refine, and show the final editable blueprint.
-
-## Development
-
-```sh
 npm test
 npm run typecheck
 npm run build
 ```
 
-React 19, TypeScript, Vinext/Vite, and custom CSS. Avatars are original SVG artwork. Hosted builds run on a Cloudflare Worker using the Sites starter; the online branch never registers the local Codex middleware. Both `npm run dev` and `npm start` serve sample-only behavior here.
+- `app/page.tsx` and `app/conversation.css`: shared minimal debate interface.
+- `lib/edition.ts`: online execution capability; the local branch sets `online: false`.
+- `lib/conversation.mjs`: sequential conversation runner and transcript export.
+- `lib/conversation-sample.ts`: authored demonstration.
+- `app/api/arena/status/route.ts`: approval status.
+- `app/api/arena/generate/route.ts`: explicit generation gate.
 
-Main files:
+The last 12 conversations are saved in this browser. There is no server history or cross-device sync. The output is a discussion and product direction, not an automatically built application. Agent agreement is not factual verification.
 
-- `app/page.tsx`: setup, round controls, intervention, history, and blueprint editor.
-- `app/globals.css`: responsive interface and motion.
-- `lib/debate-contract.mjs`: stage prompts, request validation, output contracts.
-- `app/api/arena/status/route.ts`: explicitly reports approval pending.
-- `app/api/arena/generate/route.ts`: rejects hosted generation until integration is approved and implemented.
-- `scripts/codex-provider.mjs` and `scripts/vite/arena-local-plugin.mjs`: retained reference implementation, not registered in this edition.
-- `lib/sample.ts`: explicitly authored walkthrough.
-
-## Data and limits
-
-- The most recent 12 arenas are saved in this browser’s local storage. There is no server database or cross-device sync. Export anything you want to keep.
-- The online preview makes no model requests and stores no plan credentials. The local edition documents its separate inference behavior.
-- The sample is fixed content. It saves director notes but does not dynamically generate a new debate for arbitrary prompts.
-- This is an idea-development prototype, not a code generator. The result is a product/MVP blueprint. Agreement between agents is not evidence that a claim is true; assumptions and open questions remain visible.
-
-## Track 1 design focus
-
-The human-control moment is explicit: the agents propose and challenge, then pause for the director to pin a claim or introduce a constraint. The next revision shows what changed, and the human edits the final artifact. The prototype makes a multi-agent workflow understandable through named characters, distinct phases, specific rebuttals, and visible pause points.
-
-This repository is a prototype deliverable; event submission, final pitch materials, and changing the preview’s private audience are separate steps.
+Keep shared interface files synchronized with `local`. Preserve the online-only API gate, Vite configuration, edition setting, and approval documentation when merging updates. Internal speaker IDs remain stable so saved conversations continue to load under the new display names.

@@ -1,0 +1,10 @@
+export const sampleMission =
+  "Make it more fun for friends to decide what to do together.";
+export const sampleReplies = [
+  "What if choosing the plan was a tiny game? Everyone drops one idea into a shared room, then gets one wildcard: swap the location, add a silly rule, or make it a surprise. After two minutes, the group picks from the surviving ideas. The product is the little moment of anticipation before you go out.",
+  "I like making the decision playful, but the wildcard could create more indecision. The real hurdle is getting everyone to participate. I'd start with a link that shows just two plans. One tap to choose, no account. Can we put your surprise element after the decision, so it rewards committing instead of delaying it?",
+  "Yes — the surprise can be the reveal. Everyone chooses between two mystery cards with practical clues: outside, under $20, about an hour. Once enough friends vote, the winning plan flips over. You keep a simple decision; I keep a little suspense. We should still reveal accessibility needs and travel distance before anyone commits.",
+  "That makes the reveal earn its place. I'd also let the organizer set a deadline and a default if nobody votes. For the first version, the organizer writes both options. We don't need recommendations or maps to test whether a mystery reveal actually helps a group decide. That last part is an assumption we should test.",
+  "Let's make the end feel like an invitation, not a poll result. The winning card becomes a shareable plan: where, when, and one thing to bring. Anyone can say 'I'm in' with a single tap. The surprise is optional, so friends who want certainty can see the full plan before voting.",
+  "That is a buildable first version: create two options, share a link, vote by a deadline, then reveal a plan card. I'd test it with one real group before adding anything else. Our open question is whether people enjoy the mystery or just appreciate having fewer choices. We can learn that without building a recommendation engine.",
+];
