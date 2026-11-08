@@ -3,6 +3,10 @@ import { mkdtemp, writeFile, readFile, rm } from "node:fs/promises";
 import { tmpdir, homedir } from "node:os";
 import path from "node:path";
 import {
+  buildConversationPrompt,
+  conversationSchema,
+} from "../lib/conversation-contract.mjs";
+import {
   schemas,
   matchesSchema,
   buildPrompt,
@@ -31,6 +35,28 @@ export function stopCodexRuns() {
   for (const child of active) child.kill("SIGKILL");
 }
 export async function codexStatus() {
+  const modelInfo = { defaultModel: await configuredModel(), models: [] };
+  try {
+    const cache = JSON.parse(
+      await readFile(
+        path.join(
+          process.env.CODEX_HOME || path.join(homedir(), ".codex"),
+          "models_cache.json",
+        ),
+        "utf8",
+      ),
+    );
+    modelInfo.models = (cache.models || [])
+      .filter(
+        (m) => m.visibility === "list" && /^[a-zA-Z0-9._-]{1,80}$/.test(m.slug),
+      )
+      .map((m) => ({
+        id: m.slug,
+        name: typeof m.display_name === "string" ? m.display_name : m.slug,
+      }));
+  } catch {
+    /* A fresh CLI may not have a model cache yet. Custom IDs still work. */
+  }
   return new Promise((resolve) => {
     const child = spawn(
       process.env.ARENA_CODEX_BIN || "codex",
@@ -51,6 +77,7 @@ export async function codexStatus() {
     child.on("close", (code) => {
       clearTimeout(timer);
       resolve({
+        ...modelInfo,
         available: code === 0,
         reason:
           code === 0
@@ -61,7 +88,13 @@ export async function codexStatus() {
   });
 }
 export async function generateWithCodex(body, signal) {
-  const prompt = buildPrompt(body);
+  const isConversation = ["conversation", "summary"].includes(body?.stage);
+  const prompt = isConversation
+    ? buildConversationPrompt(body)
+    : buildPrompt(body);
+  const responseSchema = isConversation
+    ? conversationSchema
+    : schemas[body.stage];
   if (pending >= 2)
     throw new Error(
       "Both agents are busy. Wait for the current round to finish.",
@@ -72,7 +105,7 @@ export async function generateWithCodex(body, signal) {
     dir = await mkdtemp(path.join(tmpdir(), "agent-arena-"));
     const schema = path.join(dir, "schema.json"),
       output = path.join(dir, "result.json");
-    await writeFile(schema, JSON.stringify(schemas[body.stage]));
+    await writeFile(schema, JSON.stringify(responseSchema));
     const args = [
       "exec",
       "--ignore-user-config",
@@ -111,7 +144,7 @@ export async function generateWithCodex(body, signal) {
     ];
     const model =
       body.model ||
-      (["plan", "blueprint"].includes(body.stage)
+      (["plan", "blueprint", "summary"].includes(body.stage)
         ? process.env.ARENA_MODERATOR_MODEL
         : process.env.ARENA_TEAM_MODEL) ||
       (await configuredModel());
@@ -172,7 +205,10 @@ export async function generateWithCodex(body, signal) {
       });
     });
     const result = JSON.parse(await readFile(output, "utf8"));
-    if (!matchesSchema(result, schemas[body.stage]))
+    if (
+      !matchesSchema(result, responseSchema) ||
+      (isConversation && (!result.text.trim() || result.text.length > 6000))
+    )
       throw new Error(
         "The agent returned an incomplete response. Retry this round.",
       );
@@ -190,7 +226,9 @@ export async function generateWithCodex(body, signal) {
           "A rebuttal did not reference an actual opposing claim. Retry the round.",
         );
     }
-    return result;
+    return isConversation
+      ? { ...result, model: model || "Codex default" }
+      : result;
   } finally {
     pending--;
     if (dir) await rm(dir, { recursive: true, force: true });

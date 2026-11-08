@@ -1,16 +1,12 @@
-# Agent Arena
+# Agent Arena · local edition
 
-**Ideas enter. Better ideas leave.**
+A minimal conversation between two AI agents. Describe something you want to make, watch Spark and Anchor respond to each other, and jump in with your own direction.
 
-**Local edition** · [Tester setup](docs/LOCAL-TESTER-GUIDE.md) · [Online approval branch](https://github.com/vulpes922/agent-arena/tree/online)
+![Minimal conversation view, showing the authored sample](docs/arena-conversation.png)
 
-A playful space where two AI perspectives challenge an idea, respond to your direction, and turn it into an editable product blueprint. Built as a functional prototype for FIG AI Design Makeathon 2026, Track 1.
+## Run it
 
-![Agent Arena interface](docs/arena-home.png)
-
-## Try it locally
-
-Requires Node.js 22.13+ and a Codex account with available usage.
+Requires Node.js 22.13+ and a Codex account with available usage. The repository is private; testers need an invitation.
 
 ```sh
 git clone --branch local https://github.com/vulpes922/agent-arena.git
@@ -19,33 +15,34 @@ npm ci
 npm run local
 ```
 
-Open the localhost URL printed in your terminal. If you already use Codex, the included CLI reuses your existing sign-in. No API key is needed. Your global Codex installation is unchanged.
+The launcher uses the project's official Codex CLI and opens sign-in if needed. On this prepared Mac checkout, double-click `start-local.command` or run `./start-local.command`. Open the terminal's local URL and keep the terminal running. `npm run doctor` checks dependencies and sign-in.
 
-On this prepared Mac checkout, you can also double-click `start-local.command` or run `./start-local.command`. It finds your installed Node or the Codex-bundled Node runtime and launches the installed dependencies. Leave that Terminal window open while using the app.
+## Use it
 
-The project includes a pinned official Codex CLI because older CLIs can reject newer subscription models. Blank model preferences use the top-level model from your local Codex configuration, falling back to the CLI default. If your account rejects that model, choose an available model in **Connection → Model preferences**.
+- Type your idea and start. Spark and Anchor take turns; each sees the preceding reply.
+- Replies appear when each model call finishes. This is live inference, not token-by-token streaming.
+- **Pause** cancels the in-progress reply. **Continue** resumes with the next agent, keeping all completed messages.
+- Sending your own direction pauses the debate and adds it to the transcript. Continue when ready; the next agent receives that direction.
+- Each run allows up to six replies, then pauses. Continue for another six. Each reply uses one Codex request and consumes your own account's allowance.
+- Open **Agent settings** to choose a separate model for Spark and Anchor. Model suggestions come from the local Codex cache; you can also enter an exact model ID. Account availability is checked by Codex when you run a turn. Pause before changing models. Earlier messages keep their original model labels.
+- **Summarize** adds an Orbit checkpoint without ending the conversation. Its model is independently selectable in settings, and it uses one request.
+- Export the complete transcript as Markdown. The last 12 conversations are saved in this browser; open Recent conversations on the home screen to resume one.
 
-The hosted private preview runs the **authored sample** only. It cannot access the Codex subscription on your computer. To use your own prompts with real AI, run locally.
+The authored sample makes no model calls. Its replies are fixed and do not adapt to your notes. The original staged prototype and its existing saved arenas remain at `/classic` (linked from settings).
 
-## The experience
+## Context and limits
 
-1. **Set the mission.** Describe what you want to make and choose each agent’s role.
-2. **Approve the brief.** Orbit splits your mission into questions and success criteria. Edit the mission and questions before proceeding.
-3. **Opening ideas.** Spark and Anchor propose independently, without seeing each other’s opening answer.
-4. **Crossfire.** Each agent challenges specific claims from the other proposal and suggests alternatives.
-5. **Direct the debate.** Pin useful claims and add constraints between rounds. Each next round waits for your click.
-6. **Refine.** Agents explain what they adopt, revise, defend, or concede.
-7. **Take the blueprint.** Orbit synthesizes the discussion into an MVP brief. Edit it, copy it, or export Markdown.
+The visible and exported transcript retains every message. Model requests include the mission, the latest 20 messages, and earlier human directions; agents may not recall older agent details. Restate a decision as a human direction if it must persist. A conversation supports up to 30 human directions. Requests have a 90 KB body limit and a 150-second timeout. Failed or cancelled replies are not added; completed replies remain available.
 
-Six perspectives are available: Visionary, Pragmatist, User advocate, Contrarian, Strategist, and Craftsperson. These are separate prompted turns, not claims of independent model identities.
+Local credentials stay with Codex. Agent subprocesses use ephemeral sessions, isolated configuration, temporary working directories, and disabled shell, web, app, plugin, browser, computer, hook, and multi-agent features. Agent roles are prompted perspectives, not separate authorities. The result is a discussion and product direction; this app does not automatically implement or deploy the proposed product.
 
-One complete live arena uses eight Codex calls: one brief, two openings, two critiques, two revisions, and one synthesis. Team turns run concurrently, with a maximum of two active calls. Live use consumes your subscription allowance; it is not unlimited or free inference.
+## Branches
 
-## Demo in 90 seconds
+- `local`: live conversation, per-agent models, local onboarding.
+- [online](https://github.com/vulpes922/agent-arena/tree/online): separately maintained hosted sample; visitor ChatGPT plan access has been requested and remains pending.
+- `main`: original prototype baseline.
 
-Select **Watch an idea evolve** for the reliable, clearly labeled Sidequest sample. Review the brief, start the opening round, pin a claim, and proceed to Crossfire. Add a direction, refine, and show the final editable blueprint.
-
-For a live demo, try: “Create a playful app that helps neighbors lend everyday tools without awkward group chats. Buildable in two days. No payments, ratings, or location tracking.” After Crossfire add: “Use a shared shelf for one apartment building. No maps or reputation scores.” Show how the revisions and final blueprint reflect that intervention. Live rounds may take a minute each.
+The hosted preview has not been replaced by this local edition.
 
 ## Development
 
@@ -55,30 +52,12 @@ npm run typecheck
 npm run build
 ```
 
-React 19, TypeScript, Vinext/Vite, and custom CSS. Avatars are original SVG artwork. Hosted builds run on a Cloudflare Worker using the Sites starter; local live inference is a Vite development middleware and is deliberately absent from hosted builds. `npm start` previews the production sample build; use `npm run dev` for live Codex.
+React 19, TypeScript, Vinext/Vite. The local Vite middleware supplies inference; production builds cannot use the computer's Codex account. `npm run dev` serves the local app; `npm start` serves a production preview without local inference.
 
-Main files:
+- `app/page.tsx`, `app/conversation.css`: minimal conversation UI.
+- `lib/conversation.mjs`: sequential turn runner, speaker selection, transcript export.
+- `lib/conversation-contract.mjs`: bounded dialogue context and model prompt.
+- `scripts/codex-provider.mjs`: account status, local model suggestions, cancellable model calls.
+- `app/classic/page.tsx`: preserved original staged prototype.
 
-- `app/page.tsx`: setup, round controls, intervention, history, and blueprint editor.
-- `app/globals.css`: responsive interface and motion.
-- `lib/debate-contract.mjs`: stage prompts, request validation, output contracts.
-- `scripts/codex-provider.mjs`: bounded, cancellable Codex subprocesses.
-- `scripts/vite/arena-local-plugin.mjs`: localhost-only live endpoint with same-origin checks.
-- `lib/sample.ts`: explicitly authored walkthrough.
-
-Optional environment variables: `ARENA_CODEX_BIN`, `ARENA_TEAM_MODEL`, and `ARENA_MODERATOR_MODEL`. Model fields in the interface override environment defaults. Choose a lighter moderator only if that model is available to your Codex account.
-
-## Data and limits
-
-- The most recent 12 arenas are saved in this browser’s local storage. There is no server database or cross-device sync. Export anything you want to keep.
-- Prompts and debate history are sent through Codex to generate live responses. Credentials are handled by Codex, never by the browser or repository.
-- Turns use a temporary working directory, ephemeral sessions, read-only sandboxing, and disabled shell, web, plugin, app, browser, computer, hook, and multi-agent features. User configuration is ignored except for the selected model preference. Temporary response files are removed after each turn.
-- Requests have size limits, structured-response validation, and a 150-second timeout. Stop cancels the current round; completed rounds stay saved. A failed two-agent round can be retried as a whole.
-- The sample is fixed content. It saves director notes but does not dynamically generate a new debate for arbitrary prompts.
-- This is an idea-development prototype, not a code generator. The result is a product/MVP blueprint. Agreement between agents is not evidence that a claim is true; assumptions and open questions remain visible.
-
-## Track 1 design focus
-
-The human-control moment is explicit: the agents propose and challenge, then pause for the director to pin a claim or introduce a constraint. The next revision shows what changed, and the human edits the final artifact. The prototype makes a multi-agent workflow understandable through named characters, distinct phases, specific rebuttals, and visible pause points.
-
-This repository is a prototype deliverable; event submission, final pitch materials, and changing the preview’s private audience are separate steps.
+Optional environment defaults: `ARENA_CODEX_BIN`, `ARENA_TEAM_MODEL`, `ARENA_MODERATOR_MODEL`. An explicit model choice in the interface takes priority.
