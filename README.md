@@ -18,6 +18,8 @@ npm run dev
 
 Open the localhost URL printed in your terminal. If you already use Codex, the included CLI reuses your existing sign-in. No API key is needed. Your global Codex installation is unchanged.
 
+On this prepared Mac checkout, you can also double-click `start-local.command` or run `./start-local.command`. It finds your installed Node or the Codex-bundled Node runtime and launches the installed dependencies. Leave that Terminal window open while using the app.
+
 The project includes a pinned official Codex CLI because older CLIs can reject newer subscription models. Blank model preferences use the top-level model from your local Codex configuration, falling back to the CLI default. If your account rejects that model, choose an available model in **Connection → Model preferences**.
 
 The hosted private preview runs the **authored sample** only. It cannot access the Codex subscription on your computer. To use your own prompts with real AI, run locally.
