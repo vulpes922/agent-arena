@@ -1,6 +1,6 @@
 # Agent Arena · local edition
 
-A minimal conversation between two AI agents. Describe something you want to make, watch Defender and Challenger respond to each other, and jump in with your own direction.
+A minimal conversation between two AI agents. Describe something you want to make, watch the Visionary and Pragmatist respond to each other, and jump in with your own direction.
 
 ![Two-sided debate with a moderator, showing the authored sample](docs/arena-debate.png)
 
@@ -19,12 +19,12 @@ The launcher uses the project's official Codex CLI and opens sign-in if needed. 
 
 ## Use it
 
-- Type your idea and start. Defender and Challenger take turns; each sees the preceding reply.
+- Type your idea and start. the Visionary and Pragmatist take turns; each sees the preceding reply.
 - Replies appear when each model call finishes. This is live inference, not token-by-token streaming.
 - **Pause** cancels the in-progress reply. **Continue** resumes with the next agent, keeping all completed messages.
 - Sending your own direction pauses the debate and adds it to the transcript. Continue when ready; the next agent receives that direction.
 - Each run allows up to six replies, then pauses. Continue for another six. Each reply uses one Codex request and consumes your own account's allowance.
-- Open **Agent settings** to choose a separate model for Defender and Challenger. Model suggestions come from the local Codex cache; you can also enter an exact model ID. Account availability is checked by Codex when you run a turn. Pause before changing models. Earlier messages keep their original model labels.
+- Open **Agent settings** to choose a separate model for the Visionary and Pragmatist. Model suggestions come from the local Codex cache; you can also enter an exact model ID. Account availability is checked by Codex when you run a turn. Pause before changing models. Earlier messages keep their original model labels.
 - **Ask moderator** summarizes both sides and adds a checkpoint without ending the conversation. Its model is independently selectable in settings, and it uses one request.
 - Export the complete transcript as Markdown. The last 12 conversations are saved in this browser; open Recent conversations on the home screen to resume one.
 
@@ -61,3 +61,5 @@ React 19, TypeScript, Vinext/Vite. The local Vite middleware supplies inference;
 - `app/classic/page.tsx`: preserved original staged prototype.
 
 Optional environment defaults: `ARENA_CODEX_BIN`, `ARENA_TEAM_MODEL`, `ARENA_MODERATOR_MODEL`. An explicit model choice in the interface takes priority.
+
+Participant names follow the selected perspectives. Blue and orange distinguish the two sides; either side can propose, challenge, or concede. The authored sample uses Visionary and Pragmatist.

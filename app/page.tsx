@@ -46,12 +46,6 @@ type Status = {
   models?: { id: string; name: string }[];
 };
 const KEY = "agent-arena.conversations.v1";
-const names = {
-  spark: "Defender",
-  anchor: "Challenger",
-  user: "You",
-  moderator: "Moderator",
-};
 const defaults = { spark: "", anchor: "", moderator: "" };
 
 export default function Conversation() {
@@ -306,7 +300,9 @@ export default function Conversation() {
       id: crypto.randomUUID(),
       prompt: sample ? sampleMission : draft.trim(),
       mode: sample ? "sample" : "live",
-      roles: { ...roles },
+      roles: sample
+        ? { spark: "Visionary", anchor: "Pragmatist" }
+        : { ...roles },
       models: { ...models },
       messages: [],
       updatedAt: Date.now(),
@@ -403,6 +399,7 @@ export default function Conversation() {
     URL.revokeObjectURL(url);
   }
   const activeRoles = chat?.roles || roles;
+  const names = { ...activeRoles, user: "You", moderator: "Moderator" };
   const activeModels = chat?.models || models;
   const sampleDone =
     chat?.mode === "sample" &&
@@ -413,13 +410,13 @@ export default function Conversation() {
       <button
         className={`participant spark ${busy === "spark" ? "speaking" : ""}`}
         onClick={() => setSettings(true)}
-        aria-label="Defender, side A. Open agent settings"
+        aria-label={`${names.spark}, side A. Open agent settings`}
       >
         <span className="participant-symbol" aria-hidden="true">
           ✳
         </span>
-        <strong>Defender</strong>
-        <span className="participant-role">Side A · {activeRoles.spark}</span>
+        <strong>{names.spark}</strong>
+        <span className="participant-role">Side A</span>
       </button>
       <div className="debate-middle">
         <span className="debate-versus" aria-hidden="true">
@@ -439,13 +436,13 @@ export default function Conversation() {
       <button
         className={`participant anchor ${busy === "anchor" ? "speaking" : ""}`}
         onClick={() => setSettings(true)}
-        aria-label="Challenger, side B. Open agent settings"
+        aria-label={`${names.anchor}, side B. Open agent settings`}
       >
         <span className="participant-symbol" aria-hidden="true">
           ✦
         </span>
-        <strong>Challenger</strong>
-        <span className="participant-role">Side B · {activeRoles.anchor}</span>
+        <strong>{names.anchor}</strong>
+        <span className="participant-role">Side B</span>
       </button>
     </nav>
   );
@@ -513,7 +510,7 @@ export default function Conversation() {
               talk it out.
             </h1>
             <p>
-              Defender and Challenger debate your idea.
+              {names.spark} and {names.anchor} debate your idea.
               <br />
               Ask the moderator to bring the strongest points together.
             </p>
@@ -548,7 +545,9 @@ export default function Conversation() {
                     <strong>{names[m.speaker]}</strong>
                     <span>
                       {m.speaker === "spark" || m.speaker === "anchor"
-                        ? `${m.speaker === "spark" ? "Side A" : "Side B"} · ${activeRoles[m.speaker]}`
+                        ? m.speaker === "spark"
+                          ? "Side A"
+                          : "Side B"
                         : m.speaker === "moderator"
                           ? "Neutral · recap"
                           : "Direction"}
@@ -790,7 +789,7 @@ export default function Conversation() {
                   Perspective
                   <select
                     aria-label={`${names[who]} perspective`}
-                    disabled={!!chat}
+                    disabled={!!chat || edition.online}
                     value={activeRoles[who]}
                     onChange={(e) =>
                       setRoles({ ...roles, [who]: e.target.value })

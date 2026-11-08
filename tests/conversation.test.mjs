@@ -149,3 +149,29 @@ test("exports include user direction, complete transcript, and per-message model
   assert.match(md, /Use no accounts/);
   assert.match(md, /First proposal/);
 });
+
+test("selected perspectives determine agent identity and behavior on either side", () => {
+  const s = session();
+  s.roles = { spark: "User advocate", anchor: "Craftsperson" };
+  const first = buildConversationPrompt({
+    stage: "conversation",
+    team: "spark",
+    session: s,
+  });
+  const second = buildConversationPrompt({
+    stage: "conversation",
+    team: "anchor",
+    session: s,
+  });
+  assert.match(first, /You are the User advocate on side A/);
+  assert.match(first, /accessibility, inclusion, and friction/);
+  assert.match(second, /You are the Craftsperson on side B/);
+  assert.match(second, /interaction details, coherent behavior/);
+  assert.doesNotMatch(first + second, /Defender|Challenger/);
+  s.messages = [
+    { speaker: "spark", text: "A useful idea" },
+    { speaker: "anchor", text: "An implementation detail" },
+  ];
+  assert.match(conversationMarkdown(s), /## User advocate/);
+  assert.match(conversationMarkdown(s), /## Craftsperson/);
+});

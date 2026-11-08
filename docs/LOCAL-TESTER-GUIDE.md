@@ -21,7 +21,7 @@ On a Mac, after installing dependencies, double-click `start-local.command`. On 
 
 ## Your first product idea
 
-1. Open Agent settings to choose Defender and Challenger's perspectives and models.
+1. Open Agent settings to choose each side's perspective and model.
 2. Enter what you want to make.
 3. Watch the agents reply to each other in the conversation.
 4. Pause anytime, or send a direction to pause and steer the next reply.
