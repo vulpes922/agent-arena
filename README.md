@@ -4,6 +4,12 @@ A minimal two-sided debate: **Visionary** and **Pragmatist** debate from their s
 
 [Private online preview](https://agent-arena-jh-2026.bryan922.chatgpt.site) · [Working local edition](https://github.com/vulpes922/agent-arena/tree/local) · [Hosted access application](docs/HOSTED-APPROVAL.md)
 
+![Agent Arena conversation interface, captured in the local edition](docs/screenshots/overview.jpg)
+
+[Run live debates on Mac or Windows](docs/SETUP.md) · [User guide](docs/USER-GUIDE.md) · [Development notes](docs/DEVELOPMENT.md)
+
+The setup guide targets the `local` branch; this online branch remains sample-only. Screenshots show the shared UI captured locally.
+
 ## Approval pending
 
 OpenAI's interest form has been submitted for sign-in and visitors' own ChatGPT plan usage. Submission is not approval. This branch plays a clearly labeled authored sample. Its generation endpoint returns `503 approval_required` in both development and production. It does not load local Codex middleware or use the developer's account. Signing into the private preview grants site access only.
